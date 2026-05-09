@@ -2,7 +2,7 @@ module RDRobust
 
 include("utils.jl")
 include("rdbwselect.jl")
-include("rdrobust.jl")
+include("rdrobust_impl.jl")
 include("rdplot.jl")
 
 using .Utils
