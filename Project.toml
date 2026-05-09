@@ -1,6 +1,6 @@
 name = "RDRobust"
 uuid = "a386762c-8f43-4e34-9f8e-d9c9a5892550"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["The RD Packages Team"]
 
 [deps]
