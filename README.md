@@ -53,3 +53,8 @@ plot_data = rdplot(y, x)
 - Calonico, Cattaneo and Titiunik (2014): [Robust Data-Driven Inference in the Regression-Discontinuity Design](https://rdpackages.github.io/references/Calonico-Cattaneo-Titiunik_2014_Stata.pdf). *Stata Journal* 14(4): 909-946.
 - Calonico, Cattaneo and Titiunik (2015): [rdrobust: An R Package for Robust Nonparametric Inference in Regression-Discontinuity Designs](https://rdpackages.github.io/references/Calonico-Cattaneo-Titiunik_2015_R.pdf). *R Journal* 7(1): 38-51.
 - Calonico, Cattaneo, Farrell and Titiunik (2017): [rdrobust: Software for Regression Discontinuity Designs](https://rdpackages.github.io/references/Calonico-Cattaneo-Farrell-Titiunik_2017_Stata.pdf). *Stata Journal* 17(2): 372-404.
+
+
+## Development note
+
+This package was developed with assistance from Claude Code (Anthropic). All generated code has been reviewed, tested, and is understood by the maintainer.
