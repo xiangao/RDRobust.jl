@@ -42,6 +42,51 @@ struct RDRobustOutput
     masspoints::String
 end
 
+"""
+    rdrobust(y, x; c=0.0, fuzzy=nothing, deriv=0, p=nothing, q=nothing,
+             h=nothing, b=nothing, kernel="tri", bwselect="mserd", vce="nn",
+             cluster=nothing, level=95.0, covs=nothing, kwargs...)
+
+Local polynomial regression discontinuity (RD) point estimator with robust
+bias-corrected confidence intervals (Calonico, Cattaneo & Titiunik, 2014).
+
+# Arguments
+- `y`, `x`: outcome and running variable (vectors).
+- `c`: cutoff of the running variable (default 0.0).
+- `fuzzy`: treatment-receipt vector for a fuzzy RD design (default: sharp RD).
+- `deriv`: order of the derivative of the regression function to estimate
+  (0 = level, the default).
+- `p`, `q`: polynomial orders for point estimation and bias correction
+  (`q` defaults to `p + 1`; both default to a data-driven choice).
+- `h`, `b`: main and bias bandwidths (default: MSE-optimal, see `bwselect`).
+- `kernel`: `"tri"` (triangular, default), `"epa"` (Epanechnikov), or `"uni"`
+  (uniform).
+- `bwselect`: bandwidth selection procedure, e.g. `"mserd"` (default) or
+  `"cerrd"`.
+- `vce`: variance-covariance estimator, e.g. `"nn"` (nearest-neighbor,
+  default) or `"hc0"`/`"hc1"`/`"hc2"`/`"hc3"`.
+- `cluster`: cluster variable for cluster-robust `vce`.
+- `covs`: additional covariates for covariate-adjusted RD.
+- `level`: confidence level in percent (default 95.0).
+
+# Returns
+An `RDRobustOutput` with conventional (`tau_cl`) and robust bias-corrected
+(`tau_bc`) point estimates, standard errors, and confidence intervals for
+both sides of the cutoff.
+
+# Example
+```julia
+using RDRobust, CSV, DataFrames
+
+df  = CSV.read("rdrobust_senate.csv", DataFrame)
+res = rdrobust(df.vote, df.margin)
+res.Estimate.tau_us[1]   # conventional point estimate
+res.Estimate.tau_bc[1]   # robust bias-corrected point estimate
+```
+
+See the [Getting Started](https://xiangao.github.io/RDRobust.jl/dev/) page
+for a runnable version of this example.
+"""
 function rdrobust(y, x; c=0.0, fuzzy=nothing, deriv=0, p=nothing, q=nothing,
                   h=nothing, b=nothing, rho=nothing, covs=nothing, covs_drop=true,
                   kernel="tri", weights=nothing, bwselect="mserd", vce="nn",

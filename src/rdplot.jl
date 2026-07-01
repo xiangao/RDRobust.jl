@@ -29,8 +29,43 @@ struct RDPlotOutput
     kernel::String
 end
 
+"""
+    rdplot(y, x; c=0.0, p=4, nbins=nothing, binselect="esmv", h=nothing,
+           kernel="uni", covs=nothing, kwargs...)
+
+Data-driven RD plots: bins the running variable on either side of the cutoff
+and overlays a global polynomial fit, following Calonico, Cattaneo & Titiunik
+(2015). Returns the underlying data rather than a plot object, so it can be
+fed to any plotting package.
+
+# Arguments
+- `y`, `x`: outcome and running variable.
+- `c`: cutoff (default 0.0).
+- `p`: order of the global polynomial fit (default 4).
+- `nbins`: number of bins on each side (default: data-driven, via `binselect`).
+- `binselect`: bin-selection method when `nbins` isn't given, e.g. `"esmv"`
+  (evenly-spaced, mimicking variance, the default) or `"qsmv"` (quantile-spaced).
+- `h`: bandwidth restricting which observations are used for the plot.
+- `kernel`: weighting kernel for the polynomial fit, `"uni"` (uniform,
+  default) or `"tri"`/`"epa"`.
+- `covs`: additional covariates to partial out before plotting.
+
+# Returns
+An `RDPlotOutput` with per-bin averages (`vars_bins`) and the fitted
+polynomial (`vars_poly`), ready to hand to a plotting library.
+
+# Example
+```julia
+using RDRobust, CSV, DataFrames
+
+df = CSV.read("rdrobust_senate.csv", DataFrame)
+rd = rdplot(df.vote, df.margin)
+rd.vars_bins   # per-bin (x, y) averages to scatter
+rd.vars_poly   # fitted polynomial curve to overlay
+```
+"""
 function rdplot(y, x; c=0.0, p=4, nbins=nothing, binselect="esmv", scale=nothing,
-                kernel="uni", weights=nothing, h=nothing, 
+                kernel="uni", weights=nothing, h=nothing,
                 covs=nothing, covs_eval="mean", covs_drop=true,
                 support=nothing, subset=nothing, masspoints="adjust",
                 hide=false, ci=nothing, shade=false)

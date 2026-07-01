@@ -4,6 +4,8 @@
 regression discontinuity designs. It follows the estimators and bandwidth
 selectors developed by Calonico, Cattaneo, Farrell, and Titiunik.
 
+Full documentation: **https://xiangao.github.io/RDRobust.jl/dev/**
+
 ## What is included
 
 - **`rdrobust`**: Local polynomial RD point estimators with robust bias-corrected confidence intervals.

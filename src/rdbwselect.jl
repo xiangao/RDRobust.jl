@@ -23,8 +23,35 @@ struct RDBWSelectOutput
     masspoints::String
 end
 
+"""
+    rdbwselect(y, x; c=0.0, fuzzy=nothing, deriv=0, p=nothing, q=nothing,
+               kernel="tri", bwselect="mserd", vce="nn", cluster=nothing,
+               covs=nothing, kwargs...)
+
+Data-driven bandwidth selection for regression discontinuity designs
+(Calonico, Cattaneo & Titiunik, 2014).
+
+Shares its keyword arguments with `rdrobust` — `c`, `fuzzy`, `deriv`,
+`p`/`q`, `kernel`, `bwselect`, `vce`, `cluster`, and `covs` all mean the same
+thing here. `bwselect` chooses the selection procedure, e.g. `"mserd"`
+(MSE-optimal, common bandwidth on both sides, the default) or `"cerrd"`
+(CER-optimal).
+
+# Returns
+An `RDBWSelectOutput` with the selected bandwidth(s) in `bws` (columns
+`h_left`, `h_right`, and, for two-bandwidth methods, `b_left`/`b_right`).
+
+# Example
+```julia
+using RDRobust, CSV, DataFrames
+
+df = CSV.read("rdrobust_senate.csv", DataFrame)
+bw = rdbwselect(df.vote, df.margin)
+bw.bws[1, :h_left]
+```
+"""
 function rdbwselect(y, x; c=0.0, fuzzy=nothing, deriv=0, p=nothing, q=nothing,
-                   covs=nothing, covs_drop=true, kernel="tri", weights=nothing, 
+                   covs=nothing, covs_drop=true, kernel="tri", weights=nothing,
                    bwselect="mserd", vce="nn", cluster=nothing, nnmatch=3,
                    scaleregul=1.0, sharpbw=false, all_bws=false, subset=nothing,
                    masspoints="adjust", bwcheck=nothing, bwrestrict=true,
