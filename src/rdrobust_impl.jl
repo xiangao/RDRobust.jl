@@ -379,6 +379,17 @@ function rdrobust(y, x; c=0.0, fuzzy=nothing, deriv=0, p=nothing, q=nothing,
         ZWZ_p = (ZWD_p_l[:, colsZ] .- UiGU_p_l[:, colsZ]) .+ (ZWD_p_r[:, colsZ] .- UiGU_p_r[:, colsZ])
         ZWY_p = (ZWD_p_l[:, 1:(1+dT)] .- UiGU_p_l[:, 1:(1+dT)]) .+ (ZWD_p_r[:, 1:(1+dT)] .- UiGU_p_r[:, 1:(1+dT)])
         
+        # ZWZ_p is singular when a covariate (or a combination of them) is a
+        # function of the running variable over the mass points inside the
+        # bandwidth: the covariate then duplicates the local polynomials and the
+        # covariate-adjusted jump is not identified. pinv returns one solution
+        # (R's ginv with tol 1e-20 returns another), so say so.
+        if rank(Symmetric(ZWZ_p); rtol = sqrt(eps())) < size(ZWZ_p, 1)
+            @warn "rdrobust: the covariates are collinear with the local polynomial " *
+                  "inside the bandwidth (for example, a covariate that is a function of " *
+                  "the running variable). The covariate-adjusted estimate is not " *
+                  "identified and depends on the generalized inverse; drop those covariates."
+        end
         gamma_p = pinv(ZWZ_p) * ZWY_p
         s_Y = vcat(1.0, -gamma_p[:, 1])
         

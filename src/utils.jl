@@ -6,7 +6,7 @@ using Distributions
 using DataFrames
 
 export rdrobust_kweight, rdrobust_res, rdrobust_vce, rdrobust_bw
-export qrXXinv, crossprod, complete_cases, covs_drop_fun
+export qrXXinv, crossprod, complete_cases, covs_drop_fun, quantile_type2
 
 function crossprod(x, y=nothing)
     if isnothing(y)
@@ -29,17 +29,29 @@ function complete_cases(x::AbstractVector)
     return .!isnan.(x)
 end
 
-function covs_drop_fun(z::AbstractMatrix, tol=1e-5)
-    F = qr(z, Val(true))
-    # F.R is the R matrix, F.p is the permutation vector
-    r = F.R
-    keep_idx = []
-    for i in 1:min(size(r)...)
-        if abs(r[i, i]) > tol
-            push!(keep_idx, i)
-        end
+# R's quantile(x, p, type = 2): the inverse of the empirical distribution
+# function, averaging at discontinuities. rdbwselect uses it for the IQR in the
+# pilot bandwidth; Statistics.quantile is type 7, which differs for most n.
+function quantile_type2(x::AbstractVector, p::Real)
+    xs = sort(x)
+    n = length(xs)
+    np = n * p
+    j = floor(Int, np + 4 * eps(np))   # R's fuzz against floating error
+    g = np - j
+    if abs(g) <= 4 * eps(np)
+        return j == 0 ? xs[1] : j >= n ? xs[n] : (xs[j] + xs[j + 1]) / 2
     end
-    return z[:, F.p[keep_idx]]
+    return xs[clamp(j + 1, 1, n)]
+end
+
+# Drop covariates that are collinear with earlier ones, as R rdrobust's
+# covs_drop_fun does with qr(z, tol = 1e-7): pivoted QR, keep the columns whose
+# diagonal of R is non-negligible relative to the largest, in original order.
+function covs_drop_fun(z::AbstractMatrix, tol=1e-7)
+    F = qr(z, ColumnNorm())
+    d = abs.(diag(F.R))
+    keep = findall(d .> tol * maximum(d))
+    return z[:, sort(F.p[keep])]
 end
 
 function rdrobust_kweight(X, c, h, kernel)
