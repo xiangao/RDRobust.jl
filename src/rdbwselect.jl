@@ -101,7 +101,7 @@ function rdbwselect(y, x; c=0.0, fuzzy=nothing, deriv=0, p=nothing, q=nothing,
     end
     
     # Standardize vars
-    x_iq = quantile(x, 0.75) - quantile(x, 0.25)
+    x_iq = quantile_type2(x, 0.75) - quantile_type2(x, 0.25)   # R uses type = 2
     BWp = min(std(x), x_iq / 1.349)
     x_sd = 1.0
     y_sd = 1.0

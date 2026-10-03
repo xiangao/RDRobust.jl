@@ -21,6 +21,11 @@ Supports:
 - Fuzzy RD designs.
 - Multiple kernels: Triangular (default), Epanechnikov, and Uniform.
 
+Estimates, standard errors and bandwidths match R `rdrobust` 4.0.0 to 1e-6 on the
+test cases in `test/` (sharp and fuzzy, with and without covariates). When
+covariates are collinear with the local polynomial inside the bandwidth, the
+covariate-adjusted jump is not identified and `rdrobust` warns.
+
 ## Installation
 
 ```julia
